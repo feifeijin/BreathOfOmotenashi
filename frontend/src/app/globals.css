@@ -3,7 +3,34 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --map-bg: #0b1a2b;
+  --map-dot: #112233;
+  --topo-line: rgba(0, 180, 150, 0.08);
+  --marker-teal: #00c8a0;
+  --marker-glow: rgba(0, 200, 160, 0.35);
+  --fab-cyan: #00c8ff;
+  --tab-active: #00c8ff;
 }
+
+@keyframes markerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--marker-glow), 0 0 12px var(--marker-glow); }
+  50% { box-shadow: 0 0 0 8px transparent, 0 0 20px var(--marker-glow); }
+}
+@keyframes markerPulseActive {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.5), 0 0 20px rgba(0,200,255,0.5); }
+  50% { box-shadow: 0 0 0 12px transparent, 0 0 36px rgba(0,200,255,0.6); }
+}
+@keyframes fabPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.4), 0 8px 24px rgba(0,200,255,0.3); }
+  50% { box-shadow: 0 0 0 12px transparent, 0 8px 32px rgba(0,200,255,0.4); }
+}
+@keyframes voiceWave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+.marker-pulse { animation: markerPulse 2.5s ease-in-out infinite; }
+.marker-pulse-active { animation: markerPulseActive 1.5s ease-in-out infinite; }
+.fab-pulse { animation: fabPulse 2s ease-in-out infinite; }
 
 @theme inline {
   --color-background: var(--background);

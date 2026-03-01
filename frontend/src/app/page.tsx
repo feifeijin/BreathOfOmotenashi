@@ -1,57 +1,128 @@
-import ChatPanel from '@/components/ChatPanel';
-import ShrineVoiceGuide from '@/components/ShrineVoiceGuide';
+'use client';
 
-const SHRINES = [
-  { id: 'fushimi-inari', name: '伏見稲荷大社', location: '京都', emoji: '🦊' },
-  { id: 'meiji-jingu', name: '明治神宮', location: '東京', emoji: '🌿' },
-  { id: 'kasuga-taisha', name: '春日大社', location: '奈良', emoji: '🦌' },
-  { id: 'izumo-taisha', name: '出雲大社', location: '島根', emoji: '⛩' },
-  { id: 'itsukushima', name: '厳島神社', location: '広島', emoji: '🌊' },
+import { useState } from 'react';
+import MapBackground from '@/components/MapBackground';
+import ShrineMarker from '@/components/ShrineMarker';
+import BottomTabBar from '@/components/BottomTabBar';
+import MapControls from '@/components/MapControls';
+
+export const KYOTO_SHRINES = [
+  { id: "fushimi-inari", name: "伏見稲荷大社", nameEn: "Fushimi Inari",  icon: "⛩", x: 62, y: 72 },
+  { id: "arashiyama",    name: "嵐山",         nameEn: "Arashiyama",     icon: "🌿", x: 27, y: 53 },
+  { id: "kinkakuji",     name: "金閣寺",       nameEn: "Kinkaku-ji",     icon: "🏯", x: 38, y: 22 },
+  { id: "kiyomizudera",  name: "清水寺",       nameEn: "Kiyomizudera",   icon: "💧", x: 72, y: 35 },
+  { id: "heian-jingu",   name: "平安神宮",     nameEn: "Heian Jingu",    icon: "⛩", x: 52, y: 38 },
 ];
 
 export default function Home() {
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 text-stone-100">
-      {/* Header */}
-      <header className="border-b border-amber-900/30 bg-stone-950/80 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
-          <span className="text-3xl">⛩</span>
-          <div>
-            <h1 className="font-bold text-amber-100 text-xl leading-tight tracking-wide">
-              Breath of Omotenashi
-            </h1>
-            <p className="text-xs text-stone-400">訪日外国人向けAI神社音声ガイド</p>
-          </div>
-        </div>
-      </header>
+  const [selectedShrine, setSelectedShrine] = useState<string | null>(null);
 
-      {/* Shrine Grid */}
-      <section className="max-w-5xl mx-auto px-4 py-10">
-        <h2 className="text-sm uppercase tracking-widest text-stone-500 mb-6">
-          神社を選んで、精霊の声を聞く
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {SHRINES.map((shrine) => (
-            <div
+  return (
+    <div
+      className="relative mx-auto overflow-hidden"
+      style={{ maxWidth: 430, height: "100dvh", background: "#0b1a2b" }}
+    >
+      {/* Header */}
+      <div
+        className="absolute top-0 z-20 w-full flex items-center justify-between"
+        style={{ padding: "12px 16px" }}
+      >
+        <button className="text-stone-300 text-2xl font-light leading-none">≡</button>
+        <span className="text-white font-semibold text-lg">Kyoto, Japan</span>
+        <button
+          className="flex items-center justify-center rounded-full"
+          style={{
+            width: 36,
+            height: 36,
+            background: "rgba(0,200,255,0.15)",
+            color: "#00c8ff",
+            fontSize: 16,
+          }}
+        >
+          ⊟
+        </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="absolute z-20" style={{ top: 64, left: 16, right: 16 }}>
+        <div
+          className="flex items-center gap-2 rounded-full"
+          style={{
+            background: "rgba(7,16,24,0.85)",
+            border: "1px solid #1a3a4a",
+            padding: "10px 20px",
+          }}
+        >
+          <span style={{ color: "#4a6070", fontSize: 14 }}>🔍</span>
+          <input
+            type="text"
+            placeholder="Find hidden shrines & spirits..."
+            className="bg-transparent outline-none flex-1 placeholder:text-[#4a6070]"
+            style={{ fontSize: 14, color: "#c0d0e0" }}
+          />
+        </div>
+      </div>
+
+      {/* Map Area */}
+      <div className="absolute inset-0">
+        <MapBackground />
+
+        {/* Shrine Markers */}
+        <div className="absolute inset-0">
+          {KYOTO_SHRINES.map((shrine) => (
+            <ShrineMarker
               key={shrine.id}
-              className="rounded-2xl border border-stone-700/50 bg-stone-900/60 p-5 hover:border-amber-700/50 transition-colors"
-            >
-              <div className="text-4xl mb-3">{shrine.emoji}</div>
-              <h3 className="font-semibold text-amber-100 text-base">{shrine.name}</h3>
-              <p className="text-xs text-stone-500 mb-3">{shrine.location}</p>
-              <ShrineVoiceGuide shrineId={shrine.id} shrineName={shrine.name} />
-            </div>
+              {...shrine}
+              isActive={selectedShrine === shrine.id}
+              onClick={() => setSelectedShrine(shrine.id)}
+            />
           ))}
         </div>
-      </section>
 
-      {/* Chat Panel */}
-      <section className="max-w-5xl mx-auto px-4 pb-12">
-        <h2 className="text-sm uppercase tracking-widest text-stone-500 mb-4">
-          テキストで質問する
-        </h2>
-        <ChatPanel />
-      </section>
-    </main>
+        {/* User Location Dot */}
+        <div
+          className="absolute flex flex-col items-center"
+          style={{ left: "48%", top: "62%", transform: "translate(-50%, -50%)" }}
+        >
+          <span style={{ fontSize: 10, color: "white", lineHeight: 1 }}>▲</span>
+          <div
+            className="rounded-full"
+            style={{
+              width: 12,
+              height: 12,
+              background: "white",
+              boxShadow: "0 0 8px rgba(255,255,255,0.8)",
+            }}
+          />
+        </div>
+
+        {/* Map Controls */}
+        <div className="absolute" style={{ left: 16, bottom: 112 }}>
+          <MapControls />
+        </div>
+      </div>
+
+      {/* FAB Mic Button */}
+      <button
+        className="absolute flex items-center justify-center rounded-full fab-pulse z-30"
+        style={{
+          right: 20,
+          bottom: 96,
+          width: 60,
+          height: 60,
+          background: "#00c8ff",
+        }}
+        onClick={() => {
+          if (!selectedShrine) setSelectedShrine(KYOTO_SHRINES[0].id);
+        }}
+      >
+        <span style={{ fontSize: 24 }}>🎤</span>
+      </button>
+
+      {/* Bottom Tab Bar */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <BottomTabBar />
+      </div>
+    </div>
   );
 }
