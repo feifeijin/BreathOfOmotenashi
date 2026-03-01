@@ -1,0 +1,188 @@
+{
+  "_ten": {
+    "predefined_graphs": [
+      {
+        "name": "shrine_voice_guide",
+        "auto_start": true,
+        "nodes": [
+          {
+            "type": "extension",
+            "name": "agora_rtc_extension",
+            "addon": "agora_rtc",
+            "extension_group": "rtc_group",
+            "property": {
+              "app_id": "${env:AGORA_APP_ID}",
+              "token": "",
+              "channel": "",
+              "stream_id": 0,
+              "remote_stream_id": 1,
+              "subscribe_audio": true,
+              "publish_audio": true,
+              "subscribe_video": false,
+              "publish_video": false
+            }
+          },
+          {
+            "type": "extension",
+            "name": "ten_vad",
+            "addon": "ten_vad",
+            "extension_group": "vad_group",
+            "property": {
+              "mode": 3,
+              "frame_size_ms": 10
+            }
+          },
+          {
+            "type": "extension",
+            "name": "minimax_asr",
+            "addon": "minimax_asr",
+            "extension_group": "asr_group",
+            "property": {
+              "api_key": "${env:MINIMAX_API_KEY}",
+              "group_id": "${env:MINIMAX_GROUP_ID}",
+              "lang": "auto"
+            }
+          },
+          {
+            "type": "extension",
+            "name": "shrine_rag",
+            "addon": "shrine_rag",
+            "extension_group": "rag_group",
+            "property": {}
+          },
+          {
+            "type": "extension",
+            "name": "minimax_llm",
+            "addon": "minimax_llm",
+            "extension_group": "llm_group",
+            "property": {
+              "api_key": "${env:MINIMAX_API_KEY}",
+              "group_id": "${env:MINIMAX_GROUP_ID}",
+              "model": "abab6.5s-chat",
+              "max_tokens": 512,
+              "system_message": "あなたは神秘的な神社の守護精霊です。\nYou are the mystical spirit guardian of ancient Japanese shrines.\n\nSpeak with wisdom and reverence, as if guiding a traveler through sacred lands.\nYour voice carries the weight of centuries — like the Voice from the Sacred Realm.\n\nWhen speaking:\n- Begin with a mystical Japanese phrase woven into your greeting\n- Weave Japanese and English naturally in each response\n- Use poetic, ethereal language that evokes the sacred atmosphere\n- Share the ancient wisdom and spiritual significance of shrine elements\n- Guide visitors with reverence, gentleness, and quiet awe\n- Keep responses concise — you speak like a whisper from the spirit world\n\n例: 「古より伝わる神の息吹を感じよ... Feel the breath of ancient gods upon these sacred grounds, traveler.」"
+            }
+          },
+          {
+            "type": "extension",
+            "name": "minimax_tts",
+            "addon": "minimax_tts",
+            "extension_group": "tts_group",
+            "property": {
+              "api_key": "${env:MINIMAX_API_KEY}",
+              "group_id": "${env:MINIMAX_GROUP_ID}",
+              "voice_id": "female-tianmei-jingpin",
+              "model": "speech-02-hd",
+              "speed": 0.95,
+              "vol": 1.0,
+              "pitch": 0
+            }
+          }
+        ],
+        "connections": [
+          {
+            "extension_group": "rtc_group",
+            "extension": "agora_rtc_extension",
+            "audio_frame": [
+              {
+                "name": "pcm_frame",
+                "dest": [
+                  {
+                    "extension_group": "vad_group",
+                    "extension": "ten_vad"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "vad_group",
+            "extension": "ten_vad",
+            "audio_frame": [
+              {
+                "name": "pcm_frame",
+                "dest": [
+                  {
+                    "extension_group": "asr_group",
+                    "extension": "minimax_asr"
+                  }
+                ]
+              }
+            ],
+            "data": [
+              {
+                "name": "vad_event",
+                "dest": [
+                  {
+                    "extension_group": "asr_group",
+                    "extension": "minimax_asr"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "asr_group",
+            "extension": "minimax_asr",
+            "data": [
+              {
+                "name": "text_data",
+                "dest": [
+                  {
+                    "extension_group": "rag_group",
+                    "extension": "shrine_rag"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "rag_group",
+            "extension": "shrine_rag",
+            "data": [
+              {
+                "name": "text_data",
+                "dest": [
+                  {
+                    "extension_group": "llm_group",
+                    "extension": "minimax_llm"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "llm_group",
+            "extension": "minimax_llm",
+            "data": [
+              {
+                "name": "text_data",
+                "dest": [
+                  {
+                    "extension_group": "tts_group",
+                    "extension": "minimax_tts"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "extension_group": "tts_group",
+            "extension": "minimax_tts",
+            "audio_frame": [
+              {
+                "name": "pcm_frame",
+                "dest": [
+                  {
+                    "extension_group": "rtc_group",
+                    "extension": "agora_rtc_extension"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
