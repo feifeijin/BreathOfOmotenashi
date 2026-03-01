@@ -5,6 +5,7 @@ import MapBackground from '@/components/MapBackground';
 import ShrineMarker from '@/components/ShrineMarker';
 import BottomTabBar from '@/components/BottomTabBar';
 import MapControls from '@/components/MapControls';
+import ShrineBottomSheet from '@/components/ShrineBottomSheet';
 
 export const KYOTO_SHRINES = [
   { id: "fushimi-inari", name: "伏見稲荷大社", nameEn: "Fushimi Inari",  icon: "⛩", x: 62, y: 72 },
@@ -15,7 +16,7 @@ export const KYOTO_SHRINES = [
 ];
 
 export default function Home() {
-  const [selectedShrine, setSelectedShrine] = useState<string | null>(null);
+  const [activeShrine, setActiveShrine] = useState<typeof KYOTO_SHRINES[0] | null>(null);
 
   return (
     <div
@@ -73,8 +74,8 @@ export default function Home() {
             <ShrineMarker
               key={shrine.id}
               {...shrine}
-              isActive={selectedShrine === shrine.id}
-              onClick={() => setSelectedShrine(shrine.id)}
+              isActive={activeShrine?.id === shrine.id}
+              onClick={() => setActiveShrine(shrine)}
             />
           ))}
         </div>
@@ -113,7 +114,7 @@ export default function Home() {
           background: "#00c8ff",
         }}
         onClick={() => {
-          if (!selectedShrine) setSelectedShrine(KYOTO_SHRINES[0].id);
+          if (!activeShrine) setActiveShrine(KYOTO_SHRINES[0]);
         }}
       >
         <span style={{ fontSize: 24 }}>🎤</span>
@@ -123,6 +124,9 @@ export default function Home() {
       <div className="absolute bottom-0 left-0 right-0">
         <BottomTabBar />
       </div>
+
+      {/* Bottom Sheet */}
+      <ShrineBottomSheet shrine={activeShrine} onClose={() => setActiveShrine(null)} />
     </div>
   );
 }
