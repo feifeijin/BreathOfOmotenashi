@@ -1,28 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 export default function LandingPage() {
+  const router = useRouter();
+
   return (
-    <html className="dark" lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <title>Breath of Omotenashi</title>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-        <style>{`
-          .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-          }
-          body {
-            min-height: max(884px, 100dvh);
-          }
-          .mystical-gradient {
-            background: linear-gradient(180deg, rgba(16, 29, 34, 0.8) 0%, rgba(16, 29, 34, 0) 40%, rgba(16, 29, 34, 1) 90%);
-          }
-        `}</style>
-      </head>
-      <body className="bg-slate-50 dark:bg-[#101d22] font-sans text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <div className="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl">
+    <>
+      <div className="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-slate-50 dark:bg-[#101d22]">
           {/* Main Content Area with Full Screen Background Image */}
           <div className="relative flex-1 flex flex-col justify-end min-h-[90vh]">
             {/* Background Image */}
@@ -75,7 +60,9 @@ export default function LandingPage() {
               
               {/* Action Buttons */}
               <div className="flex flex-col w-full gap-3">
-                <button className="relative w-full overflow-hidden rounded-xl bg-[#13b6ec] hover:bg-[#13b6ec]/90 transition-all duration-300 group h-14 flex items-center justify-center shadow-[0_0_20px_rgba(19,182,236,0.3)]">
+                <button 
+                  onClick={() => router.push('/explore')}
+                  className="relative w-full overflow-hidden rounded-xl bg-[#13b6ec] hover:bg-[#13b6ec]/90 transition-all duration-300 group h-14 flex items-center justify-center shadow-[0_0_20px_rgba(19,182,236,0.3)]">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <span className="flex items-center gap-2 text-[#101d22] font-bold text-lg tracking-wide">
                     <span className="material-symbols-outlined">explore</span>
@@ -153,7 +140,6 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </body>
-    </html>
+    </>
   );
 }
