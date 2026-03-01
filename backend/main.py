@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .core.config import settings
-from .core.zilliz_client import ensure_collection_exists
-from .routes import chat, agora, knowledge
+from core.config import settings
+from core.zilliz_client import ensure_collection_exists
+from routes import chat, agora, knowledge
 
 
 @asynccontextmanager
