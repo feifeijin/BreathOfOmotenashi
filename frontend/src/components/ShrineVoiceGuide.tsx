@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { getAgoraToken, startVoiceAgent, stopVoiceAgent } from '@/lib/api';
+import VoiceWave from '@/components/VoiceWave';
 
 type Status = 'idle' | 'connecting' | 'active' | 'stopping';
 
@@ -85,36 +86,49 @@ export default function ShrineVoiceGuide({ shrineId, shrineName }: Props) {
       {status === 'idle' && (
         <button
           onClick={handleStart}
-          className="w-full py-2 px-4 rounded-lg bg-stone-900 hover:bg-stone-700 text-amber-100 text-sm font-medium tracking-wide transition-colors border border-amber-900/40"
+          className="w-full py-3 px-4 rounded-xl text-sm font-medium tracking-wide transition-colors flex items-center justify-center gap-2"
+          style={{
+            background: "rgba(0,200,160,0.12)",
+            border: "1px solid rgba(0,200,160,0.3)",
+            color: "#00c8a0",
+          }}
         >
-          ⛩ 音声ガイドを開始する
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>record_voice_over</span>
+          音声ガイドを開始する
         </button>
       )}
 
       {status === 'connecting' && (
-        <div className="flex items-center gap-2 text-stone-400 text-sm py-2">
-          <span className="animate-pulse">◉</span>
+        <div className="flex items-center gap-2 text-sm py-2" style={{ color: "#4a7080" }}>
+          <span className="material-symbols-outlined animate-pulse" style={{ fontSize: 18, color: "#00c8ff" }}>mic</span>
           <span>接続中...</span>
         </div>
       )}
 
       {status === 'active' && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-amber-600 text-sm font-medium">
-            <span className="animate-pulse">🎙</span>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-medium" style={{ color: "#00c8a0" }}>
+            <span className="material-symbols-outlined animate-pulse" style={{ fontSize: 20 }}>mic</span>
             <span>AIガイドが話しています...</span>
+            <VoiceWave active={true} />
           </div>
           <button
             onClick={handleStop}
-            className="w-full py-2 px-4 rounded-lg bg-red-900/80 hover:bg-red-800 text-red-100 text-sm font-medium transition-colors border border-red-700/40"
+            className="w-full py-3 px-4 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            style={{
+              background: "rgba(239,68,68,0.12)",
+              border: "1px solid rgba(239,68,68,0.3)",
+              color: "#ef4444",
+            }}
           >
-            ■ ガイドを終了する
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>stop</span>
+            ガイドを終了する
           </button>
         </div>
       )}
 
       {status === 'stopping' && (
-        <div className="text-stone-400 text-sm py-2">終了中...</div>
+        <div className="text-sm py-2" style={{ color: "#4a7080" }}>終了中...</div>
       )}
 
       {error && (
