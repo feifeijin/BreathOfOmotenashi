@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import MapBackground from '@/components/MapBackground';
 import ShrineMarker from '@/components/ShrineMarker';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -16,6 +17,7 @@ export const KYOTO_SHRINES = [
 ];
 
 export default function ExplorePage() {
+  const router = useRouter();
   const [activeShrine, setActiveShrine] = useState<typeof KYOTO_SHRINES[0] | null>(null);
 
   return (
@@ -114,9 +116,7 @@ export default function ExplorePage() {
           height: 60,
           background: "#00c8ff",
         }}
-        onClick={() => {
-          if (!activeShrine) setActiveShrine(KYOTO_SHRINES[0]);
-        }}
+        onClick={() => router.push('/guide')}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 26, color: "white" }}>mic</span>
       </button>
