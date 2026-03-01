@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { getAgoraToken, startVoiceAgent, stopVoiceAgent } from '@/lib/api';
+import { useState, useRef } from 'react';
+import { sendChat, fetchTTS } from '@/lib/api';
 import VoiceWave from '@/components/VoiceWave';
 
-type Status = 'idle' | 'connecting' | 'active' | 'stopping';
+type Status = 'idle' | 'loading' | 'playing';
 
 interface Props {
   shrineId: string;
@@ -14,71 +14,53 @@ interface Props {
 export default function ShrineVoiceGuide({ shrineId, shrineName }: Props) {
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | null>(null);
-  const requestIdRef = useRef<string | null>(null);
-  const clientRef = useRef<import('agora-rtc-sdk-ng').IAgoraRTCClient | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (clientRef.current) {
-        clientRef.current.leave().catch(() => {});
-      }
-    };
-  }, []);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   async function handleStart() {
     setError(null);
-    setStatus('connecting');
+    setStatus('loading');
 
     try {
-      const channel = `shrine-${shrineId}-${Date.now()}`;
-      const uid = Math.floor(Math.random() * 90000) + 10000;
+      // 1. Generate shrine introduction via chat
+      const { reply } = await sendChat(
+        `${shrineName}について、訪日外国人向けに日本語で簡潔に音声ガイドしてください。3〜4文で、歴史・見どころ・おすすめポイントを含めてください。`,
+      );
 
-      // 1. Get Agora token
-      const tokenData = await getAgoraToken(channel, uid);
+      // 2. Convert to speech
+      const audioBlob = await fetchTTS(reply);
+      const audioUrl = URL.createObjectURL(audioBlob);
 
-      // 2. Start TEN Agent
-      const agentData = await startVoiceAgent({ channel_name: channel, uid, shrine_id: shrineId });
-      requestIdRef.current = agentData.request_id;
+      // 3. Play audio
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
 
-      // 3. Join Agora channel (lazy import for SSR safety)
-      const AgoraRTC = (await import('agora-rtc-sdk-ng')).default;
-      const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
-      clientRef.current = client;
+      audio.onended = () => {
+        setStatus('idle');
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
 
-      client.on('user-published', async (user, mediaType) => {
-        if (mediaType === 'audio') {
-          await client.subscribe(user, mediaType);
-          user.audioTrack?.play();
-        }
-      });
+      audio.onerror = () => {
+        setError('音声の再生に失敗しました');
+        setStatus('idle');
+        URL.revokeObjectURL(audioUrl);
+        audioRef.current = null;
+      };
 
-      await client.join(tokenData.app_id, channel, tokenData.token, uid);
-      const micTrack = await AgoraRTC.createMicrophoneAudioTrack();
-      await client.publish(micTrack);
-
-      setStatus('active');
+      await audio.play();
+      setStatus('playing');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : '接続に失敗しました');
+      setError(err instanceof Error ? err.message : 'ガイドの生成に失敗しました');
       setStatus('idle');
     }
   }
 
-  async function handleStop() {
-    setStatus('stopping');
-    try {
-      if (requestIdRef.current) {
-        await stopVoiceAgent({ request_id: requestIdRef.current });
-        requestIdRef.current = null;
-      }
-      if (clientRef.current) {
-        await clientRef.current.leave();
-        clientRef.current = null;
-      }
-    } catch {
-      // silently ignore stop errors
-    } finally {
-      setStatus('idle');
+  function handleStop() {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
+    setStatus('idle');
   }
 
   return (
@@ -98,14 +80,14 @@ export default function ShrineVoiceGuide({ shrineId, shrineName }: Props) {
         </button>
       )}
 
-      {status === 'connecting' && (
-        <div className="flex items-center gap-2 text-sm py-2" style={{ color: "#4a7080" }}>
+      {status === 'loading' && (
+        <div className="flex items-center gap-2 text-sm py-3" style={{ color: "#4a7080" }}>
           <span className="material-symbols-outlined animate-pulse" style={{ fontSize: 18, color: "#00c8ff" }}>mic</span>
-          <span>接続中...</span>
+          <span>ガイドを準備中...</span>
         </div>
       )}
 
-      {status === 'active' && (
+      {status === 'playing' && (
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium" style={{ color: "#00c8a0" }}>
             <span className="material-symbols-outlined animate-pulse" style={{ fontSize: 20 }}>mic</span>
@@ -125,10 +107,6 @@ export default function ShrineVoiceGuide({ shrineId, shrineName }: Props) {
             ガイドを終了する
           </button>
         </div>
-      )}
-
-      {status === 'stopping' && (
-        <div className="text-sm py-2" style={{ color: "#4a7080" }}>終了中...</div>
       )}
 
       {error && (

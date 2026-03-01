@@ -1,28 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
-from core.config import settings
-from core.zilliz_client import ensure_collection_exists
-from routes import chat, agora, knowledge
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup: ensure Zilliz collection exists
-    try:
-        ensure_collection_exists()
-    except Exception as e:
-        print(f"⚠️  Zilliz init skipped: {e}")
-    yield
-    # Shutdown
-
+from .core.config import settings
+from .routes import chat, agora
 
 app = FastAPI(
     title=settings.APP_NAME,
     description="AI-powered Omotenashi experience platform",
     version="0.1.0",
-    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -33,9 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(chat.router,      prefix="/api")
-app.include_router(agora.router,     prefix="/api")
-app.include_router(knowledge.router, prefix="/api")
+app.include_router(chat.router,  prefix="/api")
+app.include_router(agora.router, prefix="/api")
 
 
 @app.get("/")

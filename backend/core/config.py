@@ -1,4 +1,7 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings
+
+_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -19,16 +22,11 @@ class Settings(BaseSettings):
     AGORA_APP_ID: str = ""
     AGORA_APP_CERTIFICATE: str = ""
 
-    # Zilliz Cloud
-    ZILLIZ_URI: str = ""
-    ZILLIZ_TOKEN: str = ""
-    ZILLIZ_COLLECTION: str = "omotenashi_knowledge"
-
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
 
     class Config:
-        env_file = ".env"
+        env_file = str(_ENV_FILE)
         case_sensitive = True
 
 

@@ -1,19 +1,23 @@
-"""MiniMax API service — chat, TTS, embeddings."""
+"""MiniMax API service — chat and TTS."""
 import httpx
 from ..core.config import settings
 
-BASE_URL = "https://api.minimax.chat/v1"
+BASE_URL = "https://api.minimax.io/v1"
 
 
-async def chat_completion(messages: list[dict], model: str = "abab6.5s-chat") -> str:
+def _headers() -> dict:
+    return {
+        "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+
+async def chat_completion(messages: list[dict], model: str = "MiniMax-Text-01") -> str:
     """Send messages to MiniMax LLM, return assistant reply."""
     async with httpx.AsyncClient() as client:
         resp = await client.post(
-            f"{BASE_URL}/text/chatcompletion_v2",
-            headers={
-                "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
-                "Content-Type": "application/json",
-            },
+            f"{BASE_URL}/chat/completions",
+            headers=_headers(),
             json={
                 "model": model,
                 "messages": messages,
@@ -31,11 +35,8 @@ async def text_to_speech(text: str, voice_id: str = "female-tianmei") -> bytes:
     """Convert text to speech, return audio bytes (MP3)."""
     async with httpx.AsyncClient() as client:
         resp = await client.post(
-            f"{BASE_URL}/tts/stream",
-            headers={
-                "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
-                "Content-Type": "application/json",
-            },
+            f"{BASE_URL}/t2a_v2",
+            headers=_headers(),
             json={
                 "model": "speech-01-turbo",
                 "text": text,
@@ -50,24 +51,5 @@ async def text_to_speech(text: str, voice_id: str = "female-tianmei") -> bytes:
             timeout=30,
         )
         resp.raise_for_status()
-        return resp.content
-
-
-async def get_embedding(text: str) -> list[float]:
-    """Get text embedding vector from MiniMax."""
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            f"{BASE_URL}/embeddings",
-            headers={
-                "Authorization": f"Bearer {settings.MINIMAX_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": "embo-01",
-                "texts": [text],
-                "type": "query",
-            },
-            timeout=15,
-        )
-        resp.raise_for_status()
-        return resp.json()["vectors"][0]["embedding"]
+        data = resp.json()
+        return bytes.fromhex(data["data"]["audio"])
