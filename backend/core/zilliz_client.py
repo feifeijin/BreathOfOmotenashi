@@ -7,6 +7,8 @@ _client: MilvusClient | None = None
 def get_zilliz() -> MilvusClient:
     global _client
     if _client is None:
+        if not settings.ZILLIZ_URI or "YOUR_CLUSTER" in settings.ZILLIZ_URI:
+            raise RuntimeError("ZILLIZ_URI not configured in .env")
         _client = MilvusClient(
             uri=settings.ZILLIZ_URI,
             token=settings.ZILLIZ_TOKEN,
