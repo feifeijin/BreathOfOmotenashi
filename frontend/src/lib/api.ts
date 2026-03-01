@@ -50,3 +50,28 @@ export async function searchKnowledge(query: string, topK = 5) {
   if (!res.ok) throw new Error('Search failed');
   return res.json() as Promise<{ results: { text: string; score: number }[] }>;
 }
+
+// ── TEN Agent ─────────────────────────────────────────────────────
+export async function startVoiceAgent(params: {
+  channel_name: string;
+  uid: number;
+  shrine_id?: string;
+}) {
+  const res = await fetch(`${BASE}/api/agora/start-agent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json() as Promise<{ request_id: string }>;
+}
+
+export async function stopVoiceAgent(params: { request_id: string }) {
+  const res = await fetch(`${BASE}/api/agora/stop-agent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

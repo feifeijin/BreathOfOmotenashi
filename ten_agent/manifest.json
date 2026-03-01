@@ -1,0 +1,13 @@
+{
+  "type": "app",
+  "name": "shrine_voice_guide",
+  "version": "0.1.0",
+  "dependencies": [
+    { "type": "system", "name": "ten_runtime_python", "version": "0.4" },
+    { "type": "extension", "name": "agora_rtc", "version": "0.2" },
+    { "type": "extension", "name": "ten_vad", "version": "0.1" },
+    { "type": "extension", "name": "minimax_asr", "version": "0.1" },
+    { "type": "extension", "name": "minimax_llm", "version": "0.1" },
+    { "type": "extension", "name": "minimax_tts", "version": "0.1" }
+  ]
+}
