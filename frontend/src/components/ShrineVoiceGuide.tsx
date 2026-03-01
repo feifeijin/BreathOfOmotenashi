@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { getAgoraToken, startVoiceAgent, stopVoiceAgent } from '@/lib/api';
+import VoiceWave from '@/components/VoiceWave';
 
 type Status = 'idle' | 'connecting' | 'active' | 'stopping';
 
@@ -103,6 +104,7 @@ export default function ShrineVoiceGuide({ shrineId, shrineName }: Props) {
           <div className="flex items-center gap-2 text-amber-600 text-sm font-medium">
             <span className="animate-pulse">🎙</span>
             <span>AIガイドが話しています...</span>
+            <VoiceWave active={true} />
           </div>
           <button
             onClick={handleStop}

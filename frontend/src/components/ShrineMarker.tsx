@@ -48,6 +48,9 @@ export default function ShrineMarker({
       >
         {nameEn}
       </span>
+      {isActive && (
+        <span style={{ fontSize: 8, color: "#00c8a0", marginTop: 2 }}>●</span>
+      )}
     </button>
   );
 }
