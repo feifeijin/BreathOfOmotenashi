@@ -8,11 +8,11 @@ import MapControls from '@/components/MapControls';
 import ShrineBottomSheet from '@/components/ShrineBottomSheet';
 
 export const KYOTO_SHRINES = [
-  { id: "fushimi-inari", name: "伏見稲荷大社", nameEn: "Fushimi Inari",  icon: "⛩", x: 62, y: 72 },
-  { id: "arashiyama",    name: "嵐山",         nameEn: "Arashiyama",     icon: "🌿", x: 27, y: 53 },
-  { id: "kinkakuji",     name: "金閣寺",       nameEn: "Kinkaku-ji",     icon: "🏯", x: 38, y: 22 },
-  { id: "kiyomizudera",  name: "清水寺",       nameEn: "Kiyomizudera",   icon: "💧", x: 72, y: 35 },
-  { id: "heian-jingu",   name: "平安神宮",     nameEn: "Heian Jingu",    icon: "⛩", x: 52, y: 38 },
+  { id: "fushimi-inari", name: "伏見稲荷大社", nameEn: "Fushimi Inari",  icon: "temple_buddhist", x: 62, y: 72 },
+  { id: "arashiyama",    name: "嵐山",         nameEn: "Arashiyama",     icon: "landscape",       x: 27, y: 53 },
+  { id: "kinkakuji",     name: "金閣寺",       nameEn: "Kinkaku-ji",     icon: "temple_buddhist", x: 38, y: 22 },
+  { id: "kiyomizudera",  name: "清水寺",       nameEn: "Kiyomizudera",   icon: "water_drop",      x: 72, y: 35 },
+  { id: "heian-jingu",   name: "平安神宮",     nameEn: "Heian Jingu",    icon: "temple_hindu",    x: 52, y: 38 },
 ];
 
 export default function Home() {
@@ -28,7 +28,9 @@ export default function Home() {
         className="absolute top-0 z-20 w-full flex items-center justify-between"
         style={{ padding: "12px 16px" }}
       >
-        <button className="text-stone-300 text-2xl font-light leading-none">≡</button>
+        <button className="text-stone-300 leading-none">
+          <span className="material-symbols-outlined" style={{ fontSize: 28 }}>menu</span>
+        </button>
         <span className="text-white font-semibold text-lg">Kyoto, Japan</span>
         <button
           className="flex items-center justify-center rounded-full"
@@ -37,10 +39,9 @@ export default function Home() {
             height: 36,
             background: "rgba(0,200,255,0.15)",
             color: "#00c8ff",
-            fontSize: 16,
           }}
         >
-          ⊟
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>filter_list</span>
         </button>
       </div>
 
@@ -54,7 +55,7 @@ export default function Home() {
             padding: "10px 20px",
           }}
         >
-          <span style={{ color: "#4a6070", fontSize: 14 }}>🔍</span>
+          <span className="material-symbols-outlined" style={{ color: "#4a6070", fontSize: 18 }}>search</span>
           <input
             type="text"
             placeholder="Find hidden shrines & spirits..."
@@ -117,7 +118,7 @@ export default function Home() {
           if (!activeShrine) setActiveShrine(KYOTO_SHRINES[0]);
         }}
       >
-        <span style={{ fontSize: 24 }}>🎤</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 26, color: "white" }}>mic</span>
       </button>
 
       {/* Bottom Tab Bar */}

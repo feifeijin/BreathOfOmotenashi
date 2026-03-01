@@ -65,13 +65,21 @@ export default function ShrineBottomSheet({ shrine, onClose }: Props) {
           {shrine && (
             <>
               {/* Shrine Name */}
-              <div className="mt-4 px-6">
-                <h2 className="font-bold" style={{ fontSize: 24, color: "#00c8a0" }}>
-                  {shrine.name}
-                </h2>
-                <p style={{ fontSize: 13, color: "#4a7080", marginTop: 2 }}>
-                  {shrine.nameEn}
-                </p>
+              <div className="mt-4 px-6 flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 28, color: "#00c8a0" }}
+                >
+                  {shrine.icon}
+                </span>
+                <div>
+                  <h2 className="font-bold" style={{ fontSize: 22, color: "#00c8a0" }}>
+                    {shrine.name}
+                  </h2>
+                  <p style={{ fontSize: 13, color: "#4a7080", marginTop: 2 }}>
+                    {shrine.nameEn}
+                  </p>
+                </div>
               </div>
 
               {/* Description */}

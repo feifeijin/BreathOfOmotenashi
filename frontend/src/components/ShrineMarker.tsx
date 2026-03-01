@@ -33,24 +33,26 @@ export default function ShrineMarker({
           width: 52,
           height: 52,
           borderRadius: "50%",
-          border: "2px solid #00c8a0",
-          background: "rgba(0,30,40,0.85)",
+          border: `2px solid ${isActive ? "#00c8ff" : "#00c8a0"}`,
+          background: isActive ? "rgba(0,200,255,0.12)" : "rgba(0,30,40,0.85)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <span style={{ fontSize: 22 }}>{icon}</span>
+        <span
+          className="material-symbols-outlined"
+          style={{ fontSize: 24, color: isActive ? "#00c8ff" : "#00c8a0" }}
+        >
+          {icon}
+        </span>
       </div>
       <span
         className="whitespace-nowrap text-center"
-        style={{ fontSize: 10, color: "#6ee7d4", marginTop: 6 }}
+        style={{ fontSize: 10, color: isActive ? "#00c8ff" : "#6ee7d4", marginTop: 6 }}
       >
         {nameEn}
       </span>
-      {isActive && (
-        <span style={{ fontSize: 8, color: "#00c8a0", marginTop: 2 }}>●</span>
-      )}
     </button>
   );
 }
